@@ -2,5 +2,5 @@
 
 *.ini
 *.tar
-data/
+data/*
 *.pyc

@@ -1,0 +1,18 @@
+
+#### DATABASE medialib_restore
+
+## restore_index
+create table restore_index (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,subscription_timestamp DATETIME,tar_id INT(255) ,ml_id INT(255) ,current_path VARCHAR(255), new_path VARCHAR(255) ,uploaded INT(1) default 0,cleaned INT(1) default 0)
+
+## tar_index
+create table tar_index ( id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, tar VARCHAR(255), filename VARCHAR(255), tar_index INT(99), name VARCHAR(255), index_date DATETIME, tar_date DATETIME, proccessed INT(1) Default 0, restored INT(1) Default 0, match_value INT(255) default NULL, ml_id INT(255) default NULL, processed_2013 INT(1) Default 0, purged INT(1) Default 0);
+#add the unique index between tar and filename
+
+## ftp_index
+create table ftp_index ( id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, tar VARCHAR(255), remote_dir VARCHAR(255), downloaded INT(1) DEFAULT 0, requested INT(1) DEFAULT 0, download_date DATETIME, request_date DATETIME);
+
+
+#### DATABASE ml_wag
+
+alter table ml add column restore_match_id INT(255)
+alter table ml add column filename VARCHAR(255)

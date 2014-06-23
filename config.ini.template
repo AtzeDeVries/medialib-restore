@@ -1,0 +1,28 @@
+[Default]
+
+ftp_host = 
+ftp_username = 
+ftp_password = 
+
+
+db_host = 
+db_password = 
+db_user =
+db_name = medialib_restore
+
+medialib_root_mount = /medialib
+restore_upload_dir = /upload
+
+[ml_analyse]
+
+db_host = 
+db_password = 
+db_user = 
+db_name = ml_wag
+
+[medialib_live]
+
+db_host = 
+db_password = 
+db_user =
+db_name = medialibrary

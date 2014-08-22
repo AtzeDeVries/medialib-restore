@@ -38,7 +38,7 @@ def getCandidates(db_object):
     log.logger.debug(e)
     exit(1)
 
-  filename = db_object['path'].split('/')[-1][0:-len(db_object['path'].split('.')[-1])]
+  filename = db_object['path'].split('/')[-1][0:-(len(db_object['path'].split('.')[-1]) + 1)]
 
   print filename
 

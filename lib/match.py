@@ -29,40 +29,46 @@ def getUnmatched():
 
 
 
-def getCandidates(name):
+def getCandidates(db_object):
   try:
-    ml_db = db.connect(config.get('db_host','ml_analyse'),config.get('db_user','ml_analyse'),config.get('db_password','ml_analyse'),config.get('db_name','ml_analyse'))
-    log.logger.debug('Succesfully connected to database ' + config.get('db_host','ml_analyse') )
-  except Exception as e:
-    log.logger.critical('Could not connect to database '+ config.get('db_host','ml_analyse'))
-    log.logger.debug(e)
-    exit(1)
-
-  q = 'SELECT qr,path,selected,evaluated,Id FROM ml WHERE filename = "' + name + '" AND uniq > 1 AND neglect = 0 ORDER BY upload_date DESC'
-
-  try:
-    candidates = db.query(ml_db,q)
-    log.logger.debug('Succesfully queried tha ml_db database')
-  except Exception as e:
-    log.logger.critical('Unable to query ml_db database')
-    log.logger.debug(e)
-
-  if '-2013-' in name:
-    qrs = []
-    for c in candidates:
-      if not c['qr'] in qrs:
-        qrs.append(c['qr'])
-    candidates = []
-    qr_join = '"' + '","'.join(qrs) + '"'
-    #for qr in qrs:
-    q = 'SELECT qr,path,selected,evaluated,Id FROM ml WHERE qr in (' + qr_join + ') AND uniq > 1 AND neglect = 0'
-
-    try:
-      candidates = db.query(ml_db,q)
-      log.logger.debug('Succesfully queried tha ml_db database')
+      tar_db = db.connect(config.get('db_host'),config.get('db_user'),config.get('db_password'),config.get('db_name'))
+      log.logger.debug('Succesfully connected to database on: ' + config.get('db_host'))
     except Exception as e:
-      log.logger.critical('Unable to query ml_db database')
+      log.logger.critical('Could not connect database to :' + config.get('db_host'))
       log.logger.debug(e)
+      exit(1)
+
+  filename = db_object['path'].split('/')[-1][0:-len(db_object['path'].split('.')[-1])]
+
+  print filename
+
+  q = 'SELECT id,tar,filename,tar_index,name FROM tar_index WHERE name = "' + filename + '"'
+
+  try:
+    candidates = db.query(tar_db,q)
+    log.logger.debug('Succesfully queried tha tar_db database')
+  except Exception as e:
+    log.logger.critical('Unable to query tar_db database')
+    log.logger.debug(e)
+
+  # print candidates
+
+  # if '-2013-' in name:
+  #   qrs = []
+  #   for c in candidates:
+  #     if not c['qr'] in qrs:
+  #       qrs.append(c['qr'])
+  #   candidates = []
+  #   qr_join = '"' + '","'.join(qrs) + '"'
+  #   #for qr in qrs:
+  #   q = 'SELECT qr,path,selected,evaluated,Id FROM ml WHERE qr in (' + qr_join + ') AND uniq > 1 AND neglect = 0'
+  #
+  #   try:
+  #     candidates = db.query(ml_db,q)
+  #     log.logger.debug('Succesfully queried tha ml_db database')
+  #   except Exception as e:
+  #     log.logger.critical('Unable to query ml_db database')
+  #     log.logger.debug(e)
 
   return candidates
 

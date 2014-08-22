@@ -8,22 +8,23 @@ import image
 ####
 # create table match_index (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), tar_index_id INT(255), proccess_datetime DATETIME , match_value DOUBLE , ml_wag_id INT(255) );
 
-def getUnmatched(sizeset):
+def getUnmatched():
   try:
-    tar_db = db.connect(config.get('db_host'),config.get('db_user'),config.get('db_password'),config.get('db_name'))
-    log.logger.debug('Succesfully connected to database on: ' + config.get('db_host'))
+    ml_db = db.connect(config.get('db_host','ml_analyse'),config.get('db_user','ml_analyse'),config.get('db_password','ml_analyse'),config.get('db_name','ml_analyse'))
+    log.logger.debug('Succesfully connected to database ' + config.get('db_host','ml_analyse') )
   except Exception as e:
-    log.logger.critical('Could not connect database to :' + config.get('db_host'))
+    log.logger.critical('Could not connect to database '+ config.get('db_host','ml_analyse'))
     log.logger.debug(e)
+    exit(1)
 
-  q = 'SELECT id,name,filename FROM tar_index WHERE proccessed IS NULL LIMIT ' + str(sizeset)
+  q = 'SELECT qr,path,selected,evaluated,Id FROM ml WHERE filename = "' + name + '" AND uniq > 1 AND neglect = 0 AND restore_matched = 0 ORDER BY upload_date DESC'
 
   try:
-    unmatched = db.query(tar_db,q)
-    log.logger.debug('Succesfully queried tha tar_index database')
+    unmatched = db.query(ml_db,q)
+    log.logger.debug('Succesfully queried tha ml_db database')
     return unmatched
   except Exception as e:
-    log.logger.critical('Unable to query tar_index database')
+    log.logger.critical('Unable to query  ml_db database')
     log.logger.debug(e)
 
 

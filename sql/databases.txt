@@ -15,4 +15,5 @@ create table ftp_index ( id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, tar VARCHAR
 #### DATABASE ml_wag
 
 alter table ml add column restore_match_id INT(255)
-alter table ml add column filename VARCHAR(255)
+alter table ml add column restore_filename VARCHAR(255)
+alter table ml add column restore_matched INT(1) Default 0

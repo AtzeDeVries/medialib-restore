@@ -17,7 +17,7 @@ def getUnmatched():
     log.logger.debug(e)
     exit(1)
 
-  q = 'SELECT qr,path,selected,evaluated,Id FROM ml WHERE uniq > 1 AND neglect = 0 AND restore_matched = 0  AND selected = 1 ORDER BY upload_date'
+  q = 'SELECT qr,path,selected,evaluated,Id FROM ml WHERE uniq > 1 AND neglect = 0 AND restore_matched = 0  AND selected = 1 ORDER BY upload_date limit 10'
 
   try:
     unmatched = db.query(ml_db,q)

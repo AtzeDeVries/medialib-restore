@@ -31,12 +31,12 @@ def getUnmatched():
 
 def getCandidates(db_object):
   try:
-      tar_db = db.connect(config.get('db_host'),config.get('db_user'),config.get('db_password'),config.get('db_name'))
-      log.logger.debug('Succesfully connected to database on: ' + config.get('db_host'))
-    except Exception as e:
-      log.logger.critical('Could not connect database to :' + config.get('db_host'))
-      log.logger.debug(e)
-      exit(1)
+    tar_db = db.connect(config.get('db_host'),config.get('db_user'),config.get('db_password'),config.get('db_name'))
+    log.logger.debug('Succesfully connected to database on: ' + config.get('db_host'))
+  except Exception as e:
+    log.logger.critical('Could not connect database to :' + config.get('db_host'))
+    log.logger.debug(e)
+    exit(1)
 
   filename = db_object['path'].split('/')[-1][0:-len(db_object['path'].split('.')[-1])]
 

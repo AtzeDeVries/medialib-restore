@@ -218,8 +218,8 @@ def select(select_object,candidates_object):
     exit(1)
 
   try:
-    f = open(os.path.join(jpg_put_dir,select_object['qr']+'.txt'))
-    f.write('\\\\nnm\\dino'+select_object['path'][13:].replace('/','\\'))
+    f = open(os.path.join(jpg_put_dir,select_object['qr']+'.txt'),'w')
+    f.write('\\\\nnms125\\Master-Images'+select_object['path'][13:].replace('/','\\'))
     f.close()
   except Exception as e:
     log.logger.error(e)

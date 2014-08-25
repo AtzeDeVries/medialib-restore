@@ -36,8 +36,8 @@ def matchHistogram(image1,image2):
 
         try:
           result =  int(math.sqrt(reduce(operator.add,map(lambda a,b:(a-b)**2,im1,im2))/len(im1)))
-          return result
           log.logger.debug('Succesfully returned histogram difference ' + image2 + ' with value: ' +  str(result))
+          return result
         except Exception as e:
           log.logger.critical('Fail with creating a histogram of ' + image2 )
           log.logger.debug(e)

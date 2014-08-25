@@ -57,7 +57,7 @@ def convertToJpeg(tiff,jpglocation,thumbnail=False):
     jpglocation = jpglocation + '/'
   if not thumbnail:
     try:
-      os.system('/usr/bin/convert -quality 80 ' + tiff + ' ' + jpglocation + cleanname + '.jpg')
+      os.system('/usr/bin/convert ' + tiff + ' ' + jpglocation + cleanname + '.jpg')
       log.logger.debug('Succesfully converted this image from original to jpg: ' + tiff + ' to ' + jpglocation + cleanname + '.jpg')
     except Exception as e:
       log.logger.critical('Could not convert this image to jpg: ' + tiff)

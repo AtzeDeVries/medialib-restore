@@ -152,7 +152,7 @@ def downloadTar(ftp,path,tarfile):
 def extractTar(id):
 	tar_db = db.connect(config.get('db_host'),config.get('db_user'),config.get('db_password'),config.get('db_name'))
 	q = 'SELECT tar,filename FROM tar_index WHERE id = ' + str(id)
-	tar_info = []
+	tar_info = {}
 	try:
 		tar_info = db.query(tar_db,q)
 		print tar_info['tar']

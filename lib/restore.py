@@ -175,7 +175,7 @@ def extractTar(id):
 			tar.extract(tar_info[0]['filename'])
 			#tar.extract(14)
 			log.logger.debug('Succesfully extracted ' + tar_info[0]['filename'])
-			return tar_info['filename']
+			return tar_info[0]['filename']
 		except Exception as e:
 			log.logger.critical('Could not extact' + tar_info[0]['filename'] + ' from ' + tar_info[0]['tar'])
 			log.logger.debug(e)

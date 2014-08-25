@@ -18,7 +18,7 @@ def getUnmatched():
     log.logger.debug(e)
     exit(1)
 
-  q = 'SELECT qr,path,selected,evaluated,Id FROM ml WHERE uniq > 1 AND neglect = 0 AND restore_matched = 0  AND selected = 1 ORDER BY upload_date limit 10'
+  q = 'SELECT qr,path,selected,evaluated,Id,scan_date FROM ml WHERE uniq > 1 AND neglect = 0 AND restore_matched = 0  AND selected = 1 ORDER BY upload_date limit 10'
 
   try:
     unmatched = db.query(ml_db,q)
@@ -41,7 +41,7 @@ def getCandidates(db_object):
 
   filename = db_object['path'].split('/')[-1][0:-(len(db_object['path'].split('.')[-1]) + 1)]
 
-  print filename
+  #print filename
 
   q = 'SELECT id,tar,filename,tar_index,name FROM tar_index WHERE name = "' + filename + '"'
 
@@ -184,8 +184,53 @@ def select(select_object,candidates_object):
 
   m = match.index(min(match))
 
-  print select_object
-  print candidates_object[m]
+  #print select_object
+  #print candidates_object[m]
+
+
+  if select_object['scan_dir'] is None:
+    put_dir = os.path.join('/data/selected/','unknown_scandir')
+  else:
+    put_dir = os.path.join('/data/selected/',select_object['scan_dir'])
+
+  jpg_put_dir = os.path.join(put_dir,'jpeg')
+
+  if not os.path.exists(put_dir):
+    os.makedirs(jpg_put_dir)
+  if not os.path.exists(jpg_put_dir):
+    os.makedirs(jpg_put_dir)
+
+  try:
+    os.rename(candidates_object[m]['filename'],os.path.join(put_dir,select_object['qr']+'.tif'))
+  except Exception as e:
+    log.logger.critical('Could not move: ' + candidates_object[m]['filename'] + ' to: ' + os.path.join(put_dir,select_object['qr']+'.tif'))
+    log.logger.debug(e)
+    exit(1)
+
+  try:
+    image.convertToJpeg(candidates_object[m]['filename'],'/tmp/',True)
+  except Exception as e:
+    log.logger.critical('Could not create thumnail from: ' + candidates_object[m]['filename'] + ' to: /tmp/'+candidates_object[m]['name']+'.jpg'))
+    log.logger.debug(e)
+    exit(1)
+
+  try:
+    os.rename('/tmp/'+candidates_object[m]['name']+'.jpg',os.path.join(jpg_put_dir,select_object['qr']+'.jpg'))
+  except Exception as e:
+    log.logger.critical('Could not move: ' +'/tmp/'+candidates_object[m]['name']+'.jpg' + ' to: ' + os.path.join(jpg_put_dir,select_object['qr']+'.jpg'))
+    log.logger.debug(e)
+    exit(1)
+
+  for c in candidates_object:
+    if os.path.exists(c['filename']):
+      try:
+        os.remove(c['filename'])
+        log.logger.info('Succesfully removed temponary file: ' + c['filename'])
+      except Exception as e:
+        log.logger.waring('Could not remove temponary file: ' + c['filename'] + ' Please cleanup manually')
+        log.logger.debug(e)
+
+
 
 
 

@@ -42,7 +42,7 @@ def matchHistogram(image1,image2):
           log.logger.debug(e)
           raise Exception
 
-def convertToJpeg(tiff,jpglocation):
+def convertToJpeg(tiff,jpglocation,thumbnail=False):
   try:
     #cleanname = tiff.split('/')[-1][0:len(tiff.split('/')[-1].split('.')[-1])-1]
     cleanname = tiff.split('/')[-1][0:-len( tiff.split('/')[-1].split('.')[-1] ) -1]
@@ -54,10 +54,17 @@ def convertToJpeg(tiff,jpglocation):
 
   if jpglocation[-1] != '/':
     jpglocation = jpglocation + '/'
-
-  try:
-    os.system('/usr/bin/convert ' + tiff + ' ' + jpglocation + cleanname + '.jpg')
-    log.logger.debug('Succesfully converted this image from original to jpg: ' + tiff + ' to ' + jpglocation + cleanname + '.jpg')
-  except Exception as e:
-    log.logger.critical('Could not convert this image to jpg: ' + tiff)
-    log.logger.debug(e)
+  if not thumbnail:
+    try:
+      os.system('/usr/bin/convert ' + tiff + ' ' + jpglocation + cleanname + '.jpg')
+      log.logger.debug('Succesfully converted this image from original to jpg: ' + tiff + ' to ' + jpglocation + cleanname + '.jpg')
+    except Exception as e:
+      log.logger.critical('Could not convert this image to jpg: ' + tiff)
+      log.logger.debug(e)
+  else:
+    try:
+      os.system('/usr/bin/convert -quality 25%' + tiff + ' ' + jpglocation + cleanname + '.jpg')
+      log.logger.debug('Succesfully converted this image from original to jpg: ' + tiff + ' to ' + jpglocation + cleanname + '.jpg')
+    except Exception as e:
+      log.logger.critical('Could not convert this image to jpg: ' + tiff)
+      log.logger.debug(e)

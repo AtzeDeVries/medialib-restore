@@ -158,7 +158,7 @@ def extractTar(id):
 	except Exception as e:
 		log.logger.critical('Could not query tar_index table')
 		log.logger.debug(e)
-	if len(tar_info)  == 0:
+	if len(tar_info) == 0:
 		log.logger.error('Could not find this id in tar_index. ID:' + str(id))
 		raise Exception
 	else:

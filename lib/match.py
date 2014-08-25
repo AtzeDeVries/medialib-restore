@@ -209,7 +209,7 @@ def select(select_object,candidates_object):
     exit(1)
 
   try:
-    image.convertToJpeg(candidates_object[m]['filename'],'/tmp/',thumbnail=True)
+    image.convertToJpeg(os.path.join(put_dir,select_object['qr']+'.tif'),'/tmp/',thumbnail=True)
   except Exception as e:
     log.logger.critical('Could not create thumnail from: ' + candidates_object[m]['filename'] + ' to: /tmp/'+candidates_object[m]['name']+'.jpg')
     log.logger.debug(e)

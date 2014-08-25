@@ -191,7 +191,7 @@ def select(select_object,candidates_object):
   if select_object['scan_date'] is None:
     put_dir = os.path.join('/data/selected/','unknown_scandir')
   else:
-    put_dir = os.path.join('/data/selected/',select_object['scan_date'])
+    put_dir = os.path.join('/data/selected/',str(select_object['scan_date']))
 
   jpg_put_dir = os.path.join(put_dir,'jpeg')
 

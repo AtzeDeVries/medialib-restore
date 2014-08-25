@@ -217,6 +217,11 @@ def select(select_object,candidates_object):
     log.logger.debug(e)
     exit(1)
 
+  try:
+    f = open(os.path.join(jpg_put_dir,select_object['qr']+'.txt'))
+    f.write('\\\\nnm\\dino'+select_object['path'][13:].replace('/','\\'))
+    f.close()
+
   #try:
   #  os.rename('/tmp/'+candidates_object[m]['name']+'.jpg',os.path.join(jpg_put_dir,select_object['qr']+'.jpg'))
   #except Exception as e:

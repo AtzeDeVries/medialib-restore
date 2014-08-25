@@ -4,6 +4,7 @@ from datetime import datetime
 import db
 import os
 import image
+import restore
 
 ####
 # create table match_index (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), tar_index_id INT(255), proccess_datetime DATETIME , match_value DOUBLE , ml_wag_id INT(255) );

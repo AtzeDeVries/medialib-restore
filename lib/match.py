@@ -165,6 +165,27 @@ def fix2013(setSize):
         log.logger.error('could not update tar_db with ' + q)
         log.logger.debug(e)
 
+def select(select_object,candidates_object):
+  if not os.path.isfile(select_object['path']):
+    log.logger.critical('Cannot find master image: ' + select_object['path'])
+    exit(1)
+
+  match = []
+
+  for c in candidates_object:
+    r = restore.extractTar(c['id'])
+    if not os.path.isfile(r):
+      log.logger.critical('Cannot find restore image: ' + r)
+      exit(1)
+    image.convertToJpeg(c['filename'],'/tmp/')
+    match.append(image.matchHistogram(select_object['path'],'/tmp/'+c['name']+'.jpg'))
+    os.remove('/tmp/'+c['name']+'.jpg')
+
+  m = match.index(min(match))
+
+  print select_object
+  print candidates_object[m]
+
 
 
 

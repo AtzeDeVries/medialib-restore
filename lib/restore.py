@@ -165,19 +165,19 @@ def extractTar(id):
 		raise Exception
 	else:
 		try:
-			tar = tarfile.open(tar_info['tar'])
-			log.logger.debug('Succesfully opened ' + tar_info['tar'])
+			tar = tarfile.open(tar_info[0]['tar'])
+			log.logger.debug('Succesfully opened ' + tar_info[0]['tar'])
 		except Exception as e:
-			log.logger.critical('Fail during opening ' + tar_info['tar'] )
+			log.logger.critical('Fail during opening ' + tar_info[0]['tar'] )
 			log.logger.debug(e)
 			raise Exception
 		try:
 			tar.extract(tar_info['filename'])
 			#tar.extract(14)
-			log.logger.debug('Succesfully extracted ' + tar_info['filename'])
+			log.logger.debug('Succesfully extracted ' + tar_info[0]['filename'])
 			return tar_info['filename']
 		except Exception as e:
-			log.logger.critical('Could not extact' + tar_info['filename'] + ' from ' + tar_info['tar'])
+			log.logger.critical('Could not extact' + tar_info[0]['filename'] + ' from ' + tar_info[0]['tar'])
 			log.logger.debug(e)
 
 def indexTar(tarfilename):

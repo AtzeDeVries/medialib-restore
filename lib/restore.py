@@ -154,7 +154,8 @@ def extractTar(id):
 	q = 'SELECT tar,filename FROM tar_index WHERE id = ' + str(id)
 	tar_info = []
 	try:
-		tar_info = db.query(tar_db,q)[0]
+		tar_info = db.query(tar_db,q)
+		#tar_info = db.query(tar_db,q)[0]
 	except Exception as e:
 		log.logger.critical('Could not query tar_index table')
 		log.logger.debug(e)

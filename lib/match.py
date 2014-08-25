@@ -5,6 +5,7 @@ import db
 import os
 import image
 import restore
+import sys
 
 ####
 # create table match_index (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), tar_index_id INT(255), proccess_datetime DATETIME , match_value DOUBLE , ml_wag_id INT(255) );
@@ -208,7 +209,7 @@ def select(select_object,candidates_object):
     exit(1)
 
   try:
-    image.convertToJpeg(candidates_object[m]['filename'],'/tmp/',True)
+    image.convertToJpeg(candidates_object[m]['filename'],'/tmp/',thumbnail=True)
   except Exception as e:
     log.logger.critical('Could not create thumnail from: ' + candidates_object[m]['filename'] + ' to: /tmp/'+candidates_object[m]['name']+'.jpg')
     log.logger.debug(e)

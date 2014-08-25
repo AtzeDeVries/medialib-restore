@@ -210,7 +210,7 @@ def select(select_object,candidates_object):
   try:
     image.convertToJpeg(candidates_object[m]['filename'],'/tmp/',True)
   except Exception as e:
-    log.logger.critical('Could not create thumnail from: ' + candidates_object[m]['filename'] + ' to: /tmp/'+candidates_object[m]['name']+'.jpg'))
+    log.logger.critical('Could not create thumnail from: ' + candidates_object[m]['filename'] + ' to: /tmp/'+candidates_object[m]['name']+'.jpg')
     log.logger.debug(e)
     exit(1)
 

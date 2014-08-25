@@ -185,6 +185,8 @@ def select(select_object,candidates_object):
 
   m = match.index(min(match))
 
+  print 'THE MATCH VALUE IS!!!: ' +  str(min(match))
+
   #print select_object
   #print candidates_object[m]
 
@@ -230,6 +232,7 @@ def select(select_object,candidates_object):
       except Exception as e:
         log.logger.waring('Could not remove temponary file: ' + c['filename'] + ' Please cleanup manually')
         log.logger.debug(e)
+
 
 
 

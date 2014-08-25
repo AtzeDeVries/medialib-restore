@@ -3,8 +3,8 @@ import logging
 
 filehandler = False
 
-level = logging.DEBUG
-#level = logging.INFO
+#level = logging.DEBUG
+level = logging.INFO
 
 #logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)

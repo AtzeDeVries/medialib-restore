@@ -209,18 +209,18 @@ def select(select_object,candidates_object):
     exit(1)
 
   try:
-    image.convertToJpeg(os.path.join(put_dir,select_object['qr']+'.tif'),'/tmp/',thumbnail=True)
+    image.convertToJpeg(os.path.join(put_dir,select_object['qr']+'.tif'),jpg_put_dir,thumbnail=True)
   except Exception as e:
     log.logger.critical('Could not create thumnail from: ' + candidates_object[m]['filename'] + ' to: /tmp/'+candidates_object[m]['name']+'.jpg')
     log.logger.debug(e)
     exit(1)
 
-  try:
-    os.rename('/tmp/'+candidates_object[m]['name']+'.jpg',os.path.join(jpg_put_dir,select_object['qr']+'.jpg'))
-  except Exception as e:
-    log.logger.critical('Could not move: ' +'/tmp/'+candidates_object[m]['name']+'.jpg' + ' to: ' + os.path.join(jpg_put_dir,select_object['qr']+'.jpg'))
-    log.logger.debug(e)
-    exit(1)
+  #try:
+  #  os.rename('/tmp/'+candidates_object[m]['name']+'.jpg',os.path.join(jpg_put_dir,select_object['qr']+'.jpg'))
+  #except Exception as e:
+  #  log.logger.critical('Could not move: ' +'/tmp/'+candidates_object[m]['name']+'.jpg' + ' to: ' + os.path.join(jpg_put_dir,select_object['qr']+'.jpg'))
+  #  log.logger.debug(e)
+  #  exit(1)
 
   for c in candidates_object:
     if os.path.exists(c['filename']):

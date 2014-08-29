@@ -5,6 +5,7 @@ import db
 import os
 import image
 import restore
+import tools
 
 
 ####
@@ -19,7 +20,7 @@ def getUnmatched():
     log.logger.debug(e)
     exit(1)
 
-  q = 'SELECT qr,path,selected,evaluated,Id,scan_date FROM ml WHERE uniq > 1 AND neglect = 0 AND restore_matched = 0  AND selected = 1 AND upload_date < "2013-08-31" ORDER BY RAND() limit 250'
+  q = 'SELECT qr,path,selected,evaluated,Id,scan_date,match_box,match_file FROM ml WHERE uniq > 1 AND neglect = 0 AND restore_matched = 0  AND selected = 1 AND upload_date < "2013-08-31" ORDER BY RAND() limit 250'
 
   try:
     unmatched = db.query(ml_db,q)
@@ -185,7 +186,7 @@ def select(select_object,candidates_object):
 
   m = match.index(min(match))
 
-  print 'THE MATCH VALUE IS!!!: ' + str(min(match))
+  #print 'THE MATCH VALUE IS!!!: ' + str(min(match))
 
   #print select_object
   #print candidates_object[m]
@@ -196,11 +197,14 @@ def select(select_object,candidates_object):
     put_dir = os.path.join('/data/selected/',str(select_object['scan_date']))
 
   jpg_put_dir = os.path.join(put_dir,'jpeg')
+  csv_put_dir = os.path.join(put_dir,'csv')
 
   if not os.path.exists(put_dir):
     os.makedirs(jpg_put_dir)
   if not os.path.exists(jpg_put_dir):
     os.makedirs(jpg_put_dir)
+  if not os.path.exists(csv_put_dir):
+    os.makedirs(csv_put_dir)
 
   try:
     os.rename(candidates_object[m]['filename'],os.path.join(put_dir,select_object['qr'] + '.tif'))
@@ -216,12 +220,12 @@ def select(select_object,candidates_object):
     log.logger.debug(e)
     exit(1)
 
-  try:
-    f = open(os.path.join(jpg_put_dir,select_object['qr'] + '.txt'),'w')
-    f.write('\\\\nnms125\\Master-Images' + select_object['path'][13:].replace('/','\\'))
-    f.close()
-  except Exception as e:
-    log.logger.error(e)
+  # try:
+  #   f = open(os.path.join(jpg_put_dir,select_object['qr'] + '.txt'),'w')
+  #   f.write('\\\\nnms125\\Master-Images' + select_object['path'][13:].replace('/','\\'))
+  #   f.close()
+  # except Exception as e:
+  #   log.logger.error(e)
 
   for c in candidates_object:
     if os.path.exists(c['filename']):
@@ -231,6 +235,27 @@ def select(select_object,candidates_object):
       except Exception as e:
         log.logger.waring('Could not remove temponary file: ' + c['filename'] + ' Please cleanup manually')
         log.logger.debug(e)
+
+  #['qr','check_it','tiff','jpg','master','scan_date','wag_jpg_link','box','analytics_database_id','best_match_value','second_best_match_value','match_factor','match_diff','correct','false_description']
+  ma = tools.match_analytics(match)
+  rowfill = [select_object['qr'],
+             tools.checkit(),
+             candidates_object[m]['filename'],
+             os.path.join(jpg_put_dir,select_object['qr'] + '.jpg'),
+             '\\\\nnms125\\Master-Images' + select_object['path'][13:].replace('/','\\'),
+             select_object['scan_date'],
+             select_object['match_file'],
+             select_object['match_box'],
+             select_object['Id'],
+             ma[0],
+             ma[1],
+             ma[2],
+             ma[3]
+             ]
+
+  tools.write_csv(os.path.join(csv_put_dir,select_object['scan_date'] + '.csv'),
+                  rowfill,
+                  )
 
 
 def selectMatch(subject):

@@ -24,15 +24,15 @@ def match_analytics(ma):
 
 
 def write_csv(f,row):
-  header = ['qr','check_it','tiff','jpg','master','scan_date','street','box','analytics_database_id','best_match_value','second_best_match_value','match_factor','match_diff','correct','false_description']
+  header = ['qr','check_it','tiff','jpg','master','scan_date','wag_jpg_link','box','analytics_database_id','best_match_value','second_best_match_value','match_factor','match_diff','correct','false_description']
   if not os.path.isfile(f):
     mf = open(f,'wb')
-    wr = csv.write(mf,quoting=csv.QUOTE_ALL, dialect='excel')
+    wr = csv.writer(mf,quoting=csv.QUOTE_ALL, dialect='excel')
     wr.writerow(header)
     wr.writerow(row)
     mf.close()
   else:
     mf = open(f,'ab')
-    wr = csv.write(mf,quoting=csv.QUOTE_ALL, dialect='excel')
+    wr = csv.writer(mf,quoting=csv.QUOTE_ALL, dialect='excel')
     wr.writerow(row)
     mf.close()

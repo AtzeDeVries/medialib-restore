@@ -1,7 +1,7 @@
 import logging
 
 
-filehandler = False
+filehandler = True
 
 level = logging.DEBUG
 #level = logging.INFO

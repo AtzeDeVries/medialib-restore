@@ -240,8 +240,8 @@ def select(select_object,candidates_object):
   ma = tools.match_analytics(match)
   rowfill = [select_object['qr'],
              tools.checkit(),
-             candidates_object[m]['filename'],
-             os.path.join(jpg_put_dir,select_object['qr'] + '.jpg'),
+             '\\\\10.61.2.125\\selected\\' + select_object['qr'] + '.tif',
+             '\\\\10.61.2.125\\selected\\jpeg\\' + select_object['qr'] + '.jpg',
              '\\\\nnms125\\Master-Images' + select_object['path'][13:].replace('/','\\'),
              str(select_object['scan_date']),
              select_object['match_file'],

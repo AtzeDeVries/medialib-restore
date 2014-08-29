@@ -243,7 +243,7 @@ def select(select_object,candidates_object):
              candidates_object[m]['filename'],
              os.path.join(jpg_put_dir,select_object['qr'] + '.jpg'),
              '\\\\nnms125\\Master-Images' + select_object['path'][13:].replace('/','\\'),
-             select_object['scan_date'],
+             str(select_object['scan_date']),
              select_object['match_file'],
              select_object['match_box'],
              select_object['Id'],

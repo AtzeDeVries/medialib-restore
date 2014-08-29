@@ -253,7 +253,7 @@ def select(select_object,candidates_object):
              ma[3]
              ]
 
-  tools.write_csv(os.path.join(csv_put_dir,select_object['scan_date'] + '.csv'),
+  tools.write_csv(os.path.join(csv_put_dir,str(select_object['scan_date']) + '.csv'),
                   rowfill,
                   )
 

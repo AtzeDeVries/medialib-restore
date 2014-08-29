@@ -239,12 +239,12 @@ def select(select_object,candidates_object):
   #['qr','check_it','tiff','jpg','master','scan_date','wag_jpg_link','box','analytics_database_id','best_match_value','second_best_match_value','match_factor','match_diff','correct','false_description']
   ma = tools.match_analytics(match)
   rowfill = [select_object['qr'],
-             tools.checkit(),
-             '\\\\10.61.2.125\\selected\\' + select_object['qr'] + '.tif',
-             '\\\\10.61.2.125\\selected\\jpeg\\' + select_object['qr'] + '.jpg',
+             tools.checkit(1000,80),
+             '\\\\10.61.2.125\\selected\\' + str(select_object['scan_date']) + '\\' + select_object['qr'] + '.tif',
+             '\\\\10.61.2.125\\selected\\' + str(select_object['scan_date']) + '\\jpeg\\' + select_object['qr'] + '.jpg',
              '\\\\nnms125\\Master-Images' + select_object['path'][13:].replace('/','\\'),
              str(select_object['scan_date']),
-             select_object['match_file'],
+             '\\\\nnm\\dino\\Digibarium\\FES herbarium digistraten\\' + select_object['match_file'].replace('/','\\'),
              select_object['match_box'],
              select_object['Id'],
              ma[0],

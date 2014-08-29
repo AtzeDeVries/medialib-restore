@@ -1,6 +1,6 @@
 configfilename = 'config.ini'
 
-import ConfigParser,os
+import ConfigParser
 import log
 
 

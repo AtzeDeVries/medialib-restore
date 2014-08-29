@@ -5,7 +5,7 @@ import db
 import os
 import image
 import restore
-import sys
+
 
 ####
 # create table match_index (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), tar_index_id INT(255), proccess_datetime DATETIME , match_value DOUBLE , ml_wag_id INT(255) );
@@ -13,9 +13,9 @@ import sys
 def getUnmatched():
   try:
     ml_db = db.connect(config.get('db_host','ml_analyse'),config.get('db_user','ml_analyse'),config.get('db_password','ml_analyse'),config.get('db_name','ml_analyse'))
-    log.logger.debug('Succesfully connected to database ' + config.get('db_host','ml_analyse') )
+    log.logger.debug('Succesfully connected to database ' + config.get('db_host','ml_analyse'))
   except Exception as e:
-    log.logger.critical('Could not connect to database '+ config.get('db_host','ml_analyse'))
+    log.logger.critical('Could not connect to database ' + config.get('db_host','ml_analyse'))
     log.logger.debug(e)
     exit(1)
 
@@ -28,7 +28,6 @@ def getUnmatched():
   except Exception as e:
     log.logger.critical('Unable to query  ml_db database')
     log.logger.debug(e)
-
 
 
 def getCandidates(db_object):
@@ -85,13 +84,13 @@ def fix2013(setSize):
 
   try:
     ml_db = db.connect(config.get('db_host','ml_analyse'),config.get('db_user','ml_analyse'),config.get('db_password','ml_analyse'),config.get('db_name','ml_analyse'))
-    log.logger.debug('Succesfully connected to database ' + config.get('db_host','ml_analyse') )
+    log.logger.debug('Succesfully connected to database ' + config.get('db_host','ml_analyse'))
   except Exception as e:
-    log.logger.critical('Could not connect to database '+ config.get('db_host','ml_analyse'))
+    log.logger.critical('Could not connect to database ' + config.get('db_host','ml_analyse'))
     log.logger.debug(e)
     exit(1)
 
-  q = 'SELECT id,name,filename FROM tar_index WHERE proccessed = 1 AND processed_2013 = 0 LIMIT ' + str(sizeset)
+  q = 'SELECT id,name,filename FROM tar_index WHERE proccessed = 1 AND processed_2013 = 0 LIMIT ' + str(setSize)
 
   try:
     unfixed = db.query(tar_db,q)
@@ -101,7 +100,7 @@ def fix2013(setSize):
     log.logger.debug(e)
 
   for unfix in unfixed:
-    filename = restore.extractTar(unfix['id'])
+    #filename = restore.extractTar(unfix['id'])
     q = 'SELECT Id,path,qr,uniq FROM ml WHERE selected = 1 AND uniq = 1 AND Filename = "' + unfix['name'] + '"'
     try:
       qr_can = db.query(ml_db,q)
@@ -111,7 +110,7 @@ def fix2013(setSize):
       log.logger.debug(e)
     if len(qr_can) == 1:
 
-      q = 'UPDATE ml SET restore_match_id = ' + str(unfix['id']) + ' WHERE Id = '+str(qr_can[0]['Id'])
+      q = 'UPDATE ml SET restore_match_id = ' + str(unfix['id']) + ' WHERE Id = ' + str(qr_can[0]['Id'])
       try:
         db.update(ml_db,q)
         log.logger.debug('Updated ml_id')
@@ -121,7 +120,7 @@ def fix2013(setSize):
 
       q = 'INSERT INTO restore_index '
       q += 'subscription_timstamp=' + str(datetime.now()) + ', '
-      q += 'tar_id=' + str(unfix['id'])  + ', '
+      q += 'tar_id=' + str(unfix['id']) + ', '
       q += 'ml_id=' + str(qr_can[0]['Id']) + ', '
       q += 'current_path=' + str(qr_can[0]['path']) + ', '
       q += 'new_path=' + config.get('restore_upload_dir') + '/' + str(qr_can[0]['qr']) + '.tif'
@@ -136,16 +135,16 @@ def fix2013(setSize):
     else:
       #this could theorecticly end up with 3 matches. Image matching should be done
       session_dir = '/tmp/ ' + str(datetime.now().__format__('%Y.%m.%d.%H.%M.%S.%f'))
-      os.mkdir(sessiondir)
+      os.mkdir(session_dir)
       image.convertToJpeg(unfix['filename'],session_dir)
       match_values = []
       for c in qr_can:
-        match_values.append(image.matchHistogram(session_dir+'/'+unfix['name']+'.jpg', config.get('medialib_root_mount')+c['path']))
+        match_values.append(image.matchHistogram(session_dir + '/ ' + unfix['name'] + '.jpg', config.get('medialib_root_mount') + c['path']))
       match = match_values.index(min(match_values))
-      os.remove(session_dir+'/'+unfix['name']+'.jpg')
+      os.remove(session_dir + '/' + unfix['name'] + '.jpg')
       os.remove(session_dir)
 
-      q = 'UPDATE ml SET restore_match_id = ' + str(unfix['id']) + ' WHERE Id = '+str(qr_can[match]['Id'])
+      q = 'UPDATE ml SET restore_match_id = ' + str(unfix['id']) + ' WHERE Id = ' + str(qr_can[match]['Id'])
       try:
         db.update(ml_db,q)
         log.logger.debug('Updated ml_id')
@@ -155,7 +154,7 @@ def fix2013(setSize):
 
       q = 'INSERT INTO restore_index '
       q += 'subscription_timstamp=' + str(datetime.now()) + ', '
-      q += 'tar_id=' + str(unfix['id'])  + ', '
+      q += 'tar_id=' + str(unfix['id']) + ', '
       q += 'ml_id=' + str(qr_can[match]['Id']) + ', '
       q += 'current_path=' + str(qr_can[match]['path']) + ', '
       q += 'new_path=' + config.get('restore_upload_dir') + '/' + str(qr_can[match]['qr']) + '.tif'
@@ -166,6 +165,7 @@ def fix2013(setSize):
       except Exception as e:
         log.logger.error('could not update tar_db with ' + q)
         log.logger.debug(e)
+
 
 def select(select_object,candidates_object):
   if not os.path.isfile(select_object['path']):
@@ -180,16 +180,15 @@ def select(select_object,candidates_object):
       log.logger.critical('Cannot find restore image: ' + r)
       exit(1)
     image.convertToJpeg(c['filename'],'/tmp/')
-    match.append(image.matchHistogram(select_object['path'],'/tmp/'+c['name']+'.jpg'))
-    os.remove('/tmp/'+c['name']+'.jpg')
+    match.append(image.matchHistogram(select_object['path'],'/tmp/' + c['name'] + '.jpg'))
+    os.remove('/tmp/' + c['name'] + '.jpg')
 
   m = match.index(min(match))
 
-  print 'THE MATCH VALUE IS!!!: ' +  str(min(match))
+  print 'THE MATCH VALUE IS!!!: ' + str(min(match))
 
   #print select_object
   #print candidates_object[m]
-
 
   if select_object['scan_date'] is None:
     put_dir = os.path.join('/data/selected/','unknown_scandir')
@@ -204,33 +203,25 @@ def select(select_object,candidates_object):
     os.makedirs(jpg_put_dir)
 
   try:
-    os.rename(candidates_object[m]['filename'],os.path.join(put_dir,select_object['qr']+'.tif'))
+    os.rename(candidates_object[m]['filename'],os.path.join(put_dir,select_object['qr'] + '.tif'))
   except Exception as e:
-    log.logger.critical('Could not move: ' + candidates_object[m]['filename'] + ' to: ' + os.path.join(put_dir,select_object['qr']+'.tif'))
+    log.logger.critical('Could not move: ' + candidates_object[m]['filename'] + ' to: ' + os.path.join(put_dir,select_object['qr'] + '.tif'))
     log.logger.debug(e)
     exit(1)
 
   try:
-    image.convertToJpeg(os.path.join(put_dir,select_object['qr']+'.tif'),jpg_put_dir,thumbnail=True)
+    image.convertToJpeg(os.path.join(put_dir,select_object['qr'] + '.tif'),jpg_put_dir,thumbnail=True)
   except Exception as e:
-    log.logger.critical('Could not create thumnail from: ' + candidates_object[m]['filename'] + ' to: /tmp/'+candidates_object[m]['name']+'.jpg')
+    log.logger.critical('Could not create thumnail from: ' + candidates_object[m]['filename'] + ' to: /tmp/' + candidates_object[m]['name'] + '.jpg')
     log.logger.debug(e)
     exit(1)
 
   try:
-    f = open(os.path.join(jpg_put_dir,select_object['qr']+'.txt'),'w')
-    f.write('\\\\nnms125\\Master-Images'+select_object['path'][13:].replace('/','\\'))
+    f = open(os.path.join(jpg_put_dir,select_object['qr'] + '.txt'),'w')
+    f.write('\\\\nnms125\\Master-Images' + select_object['path'][13:].replace('/','\\'))
     f.close()
   except Exception as e:
     log.logger.error(e)
-
-
-  #try:
-  #  os.rename('/tmp/'+candidates_object[m]['name']+'.jpg',os.path.join(jpg_put_dir,select_object['qr']+'.jpg'))
-  #except Exception as e:
-  #  log.logger.critical('Could not move: ' +'/tmp/'+candidates_object[m]['name']+'.jpg' + ' to: ' + os.path.join(jpg_put_dir,select_object['qr']+'.jpg'))
-  #  log.logger.debug(e)
-  #  exit(1)
 
   for c in candidates_object:
     if os.path.exists(c['filename']):
@@ -242,17 +233,8 @@ def select(select_object,candidates_object):
         log.logger.debug(e)
 
 
-
-
-
-
-
-
-
-
-
 def selectMatch(subject):
-  can = match.getCandidates(subject['name'])
+  can = getCandidates(subject['name'])
   if len(can) == 0:
     try:
       tar_db = db.connect(config.get('db_host'),config.get('db_user'),config.get('db_password'),config.get('db_name'))
@@ -263,9 +245,9 @@ def selectMatch(subject):
 
     try:
       ml_db = db.connect(config.get('db_host','ml_analyse'),config.get('db_user','ml_analyse'),config.get('db_password','ml_analyse'),config.get('db_name','ml_analyse'))
-      log.logger.debug('Succesfully connected to database ' + config.get('db_host','ml_analyse') )
+      log.logger.debug('Succesfully connected to database ' + config.get('db_host','ml_analyse'))
     except Exception as e:
-      log.logger.critical('Could not connect to database '+ config.get('db_host','ml_analyse'))
+      log.logger.critical('Could not connect to database ' + config.get('db_host','ml_analyse'))
       log.logger.debug(e)
       exit(1)
 
@@ -279,15 +261,15 @@ def selectMatch(subject):
 
   else:
 
-    filename = restore.extractTar(subject['id'])
+    #filename = restore.extractTar(subject['id'])
     session_dir = '/tmp/ ' + str(datetime.now().__format__('%Y.%m.%d.%H.%M.%S.%f'))
-    os.mkdir(sessiondir)
+    os.mkdir(session_dir)
     image.convertToJpeg(subject['filename'],session_dir)
     match_values = []
     for c in can:
-      match_values.append(image.matchHistogram(session_dir+'/'+subject['name']+'.jpg', config.get('medialib_root_mount')+c['path']))
+      match_values.append(image.matchHistogram(session_dir + '/' + subject['name'] + '.jpg', config.get('medialib_root_mount') + c['path']))
     match = match_values.index(min(match_values))
-    os.remove(session_dir+'/'+subject['name']+'.jpg')
+    os.remove(session_dir + '/' + subject['name'] + '.jpg')
     os.remove(session_dir)
 
     if can[match]['selected'] == 0:
@@ -301,7 +283,7 @@ def selectMatch(subject):
         log.logger.debug(e)
     elif match == 0:
       #since can array is sorted by upload date reversed, newest (current) is array entry zero, so current is ok if match = 0
-      q = 'UPDATE tar_index SET processed = 1,match_value = '+str(match_value[match])+ ',ml_id = '+str(can[match]['Id'])+' WHERE id = ' + str(subject['id'])
+      q = 'UPDATE tar_index SET processed = 1,match_value = ' + str(match_values[match]) + ',ml_id = ' + str(can[match]['Id']) + ' WHERE id = ' + str(subject['id'])
       try:
         db.update(tar_db,q)
         log.logger.debug('Updated tar db')
@@ -309,7 +291,7 @@ def selectMatch(subject):
         log.logger.error('could not update tar_index with ' + q)
         log.logger.debug(e)
 
-      q = 'UPDATE ml SET restore_match_id = ' + str(subject['id']) + ' WHERE Id = '+str(can[match]['Id'])
+      q = 'UPDATE ml SET restore_match_id = ' + str(subject['id']) + ' WHERE Id = ' + str(can[match]['Id'])
       try:
         db.update(ml_db,q)
         log.logger.debug('Updated ml_id')
@@ -326,7 +308,7 @@ def selectMatch(subject):
         log.logger.error('could not query tar_id with ' + q)
         log.logger.debug(e)
 
-      if others[0]['match_value'] >= match_value[match]:
+      if others[0]['match_value'] >= match_values[match]:
         #case when new match is worse that older match
         q = 'UPDATE tar_index SET processed = 1 WHERE id = ' + str(subject['id'])
         try:
@@ -337,7 +319,7 @@ def selectMatch(subject):
           log.logger.debug(e)
       else:
         #case when new match is bettar
-        q = 'UPDATE tar_index SET processed=1,restored=1,match_value = '+str(match_value[match])+ ',ml_id = '+str(can[match]['Id'])+' WHERE id = ' + str(subject['id'])
+        q = 'UPDATE tar_index SET processed=1,restored=1,match_value = ' + str(match_values[match]) + ',ml_id = ' + str(can[match]['Id']) + ' WHERE id = ' + str(subject['id'])
         try:
           db.update(tar_db,q)
           log.logger.debug('Updated tar db')
@@ -353,7 +335,7 @@ def selectMatch(subject):
           log.logger.error('could not update tar_index with ' + q)
           log.logger.debug(e)
 
-        q = 'UPDATE ml SET restore_match_id = ' + str(subject['id']) + ' WHERE Id = '+str(can[match]['Id'])
+        q = 'UPDATE ml SET restore_match_id = ' + str(subject['id']) + ' WHERE Id = ' + str(can[match]['Id'])
         try:
           db.update(ml_db,q)
           log.logger.debug('Updated ml_id')
@@ -363,7 +345,7 @@ def selectMatch(subject):
 
         q = 'INSERT INTO restore_index '
         q += 'subscription_timstamp=' + str(datetime.now()) + ', '
-        q += 'tar_id=' + str(subject['id'])  + ', '
+        q += 'tar_id=' + str(subject['id']) + ', '
         q += 'ml_id=' + str(can[match]['Id']) + ', '
         q += 'current_path=' + str(can[match]['path']) + ', '
         q += 'new_path=' + config.get('restore_upload_dir') + '/' + str(can[match]['qr']) + '.tif'
@@ -375,12 +357,13 @@ def selectMatch(subject):
           log.logger.error('could not update tar_db with ' + q)
           log.logger.debug(e)
 
+
 def updateFilename():
     try:
       ml_db = db.connect(config.get('db_host','ml_analyse'),config.get('db_user','ml_analyse'),config.get('db_password','ml_analyse'),config.get('db_name','ml_analyse'))
-      log.logger.debug('Succesfully connected to database ' + config.get('db_host','ml_analyse') )
+      log.logger.debug('Succesfully connected to database ' + config.get('db_host','ml_analyse'))
     except Exception as e:
-      log.logger.critical('Could not connect to database '+ config.get('db_host','ml_analyse'))
+      log.logger.critical('Could not connect to database ' + config.get('db_host','ml_analyse'))
       log.logger.debug(e)
       exit(1)
 
@@ -395,10 +378,10 @@ def updateFilename():
 
     for record in records:
       filename_full = record['path'].split('/')[-1]
-      filename = filename_full[:-len(filename_full.split('.')[-1]) -1]
+      filename = filename_full[:-len(filename_full.split('.')[-1]) - 1]
       #print filename + '\t' + record['path']
       q = 'UPDATE ml SET filename = "' + str(filename) + '" WHERE Id = ' + str(record['Id'])
       try:
         db.update(ml_db,q)
       except Exception as e:
-        log.logger.cirtical('Could not update id ' + str(record['Id']) )
+        log.logger.cirtical('Could not update id ' + str(record['Id']))
